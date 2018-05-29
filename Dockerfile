@@ -113,5 +113,6 @@ RUN service mysql start && \
 EXPOSE 25
 EXPOSE 143
 EXPOSE 993
+EXPOSE 3306
 
 CMD ["/usr/bin/supervisord"]
