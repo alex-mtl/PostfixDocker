@@ -96,15 +96,27 @@ RUN chmod o= /etc/pam.d/smtp && \
 RUN echo "dovecot   unix  -       n       n       -       -       pipe \
     flags=DRhu user=vmail:vmail argv=/usr/lib/dovecot/deliver -d ${recipient}" >> /etc/postfix/master.cf
 
-ADD cfg/dovecot.conf /etc/dovecot/
+#COPY cfg/dovecot.conf /etc/dovecot/
+RUN sed -i 's/#log_timestamp = "%b %d %H:%M:%S "/log_timestamp = "%Y-%m-%d %H:%M:%S "/' /etc/dovecot/conf.d/10-logging.conf
+RUN sed -i 's/mail_location = mbox:~\/mail:INBOX=\/var\/mail\/%u/mail_location = maildir:\/home\/vmail\/%d\/%n\/Maildir/' /etc/dovecot/conf.d/10-mail.conf
+RUN sed -i 's/#ssl_cert = <\/etc\/dovecot\/dovecot.pem/ssl_cert = \/etc\/ssl\/certs\/dovecot.pem/' /etc/dovecot/conf.d/10-ssl.conf
+RUN sed -i 's/#ssl_key = <\/etc\/dovecot\/private\/dovecot.pem/ssl_key = \/etc\/ssl\/private\/dovecot.pem/' /etc/dovecot/conf.d/10-ssl.conf
+RUN sed -i 's/#type = private/type = private/' /etc/dovecot/conf.d/10-mail.conf
+RUN sed -i '0,/#separator = /s/#separator = /separator = ./' /etc/dovecot/conf.d/10-mail.conf
+RUN sed -i '0,/#prefix = /s/#prefix = /prefix = INBOX./' /etc/dovecot/conf.d/10-mail.conf
+RUN sed -i 's/#mail_plugins = \$mail_plugins/log_path = \/home\/vmail\/dovecot-deliver.log\n\
+     auth_socket_path = \/var\/run\/dovecot\/auth-master\n\
+     postmaster_address = postmaster@example.com\n\
+     mail_plugins = sieve\n\
+     global_script_path = \/home\/vmail\/globalsieverc\n/' /etc/dovecot/conf.d/15-lda.conf
 
 RUN sed -i 's/#driver =/driver = mysql/' /etc/dovecot/dovecot-sql.conf.ext
 RUN sed -i 's/#connect =/connect = host=127.0.0.1 dbname='$MYSQL_DBNAME' user='$MYSQL_USERNAME' password='$MYSQL_PASSWORD'/' /etc/dovecot/dovecot-sql.conf.ext
 RUN sed -i 's/#default_pass_scheme = MD5/default_pass_scheme = CRYPT/' /etc/dovecot/dovecot-sql.conf.ext
 RUN sed -i 's/#password_query = \\/password_query = SELECT email as user, password FROM users WHERE email='%u';/' /etc/dovecot/dovecot-sql.conf.ext
 
-RUN chgrp vmail /etc/dovecot/dovecot.conf && \
-  chmod g+r /etc/dovecot/dovecot.conf
+#RUN chgrp vmail /etc/dovecot/dovecot.conf && \
+#  chmod g+r /etc/dovecot/dovecot.conf
 
 RUN service mysql start && \
   mysql -u root -e "USE mail; \
