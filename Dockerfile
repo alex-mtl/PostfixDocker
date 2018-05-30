@@ -26,10 +26,11 @@ RUN apt-get update && \
     mailutils \
     supervisor
 
-ADD cfg/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+RUN sed -i 's/127.0.0.1/0.0.0.0/' /etc/mysql/mariadb.conf.d/50-server.cnf
+COPY cfg/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 ENV Q1 CREATE DATABASE $MYSQL_DBNAME;\
     USE $MYSQL_DBNAME;\
-    GRANT SELECT, INSERT, UPDATE, DELETE ON $MYSQL_DBNAME.* TO $MYSQL_USERNAME@localhost IDENTIFIED BY \'$MYSQL_PASSWORD\'; \
+    GRANT SELECT, INSERT, UPDATE, DELETE ON $MYSQL_DBNAME.* TO $MYSQL_USERNAME@\'%\' IDENTIFIED BY \'$MYSQL_PASSWORD\'; \
     GRANT SELECT, INSERT, UPDATE, DELETE ON $MYSQL_DBNAME.* TO $MYSQL_USERNAME@localhost.localdomain IDENTIFIED BY \'$MYSQL_PASSWORD\'; \
     FLUSH PRIVILEGES; \
     CREATE TABLE domains (DOMAIN VARCHAR(50) NOT NULL, PRIMARY KEY (DOMAIN)); \
@@ -39,10 +40,10 @@ ENV Q1 CREATE DATABASE $MYSQL_DBNAME;\
 RUN service mysql start && \
   mysql -u root -e "$Q1"
 
-ADD cfg/mysql-virtual_domains.cf /etc/postfix/
-ADD cfg/mysql-virtual_forwardings.cf /etc/postfix/
-ADD cfg/mysql-virtual_mailboxes.cf /etc/postfix/
-ADD cfg/mysql-virtual_email2email.cf /etc/postfix/
+COPY cfg/mysql-virtual_domains.cf /etc/postfix/
+COPY cfg/mysql-virtual_forwardings.cf /etc/postfix/
+COPY cfg/mysql-virtual_mailboxes.cf /etc/postfix/
+COPY cfg/mysql-virtual_email2email.cf /etc/postfix/
 
 RUN chmod o= /etc/postfix/mysql-virtual_*.cf && \
   chgrp postfix /etc/postfix/mysql-virtual_*.cf && \
@@ -85,8 +86,8 @@ RUN cp -a /etc/default/saslauthd /etc/default/saslauthd.bak
 RUN sed -i 's/START=no/START=yes/' /etc/default/saslauthd
 RUN sed -i 's#OPTIONS=".*"#OPTIONS="-c -m /var/spool/postfix/var/run/saslauthd -r"#' /etc/default/saslauthd
 
-ADD cfg/smtp /etc/pam.d/
-ADD cfg/smtpd.conf /etc/postfix/sasl/
+COPY cfg/smtp /etc/pam.d/
+COPY cfg/smtpd.conf /etc/postfix/sasl/
 
 RUN chmod o= /etc/pam.d/smtp && \
   chmod o= /etc/postfix/sasl/smtpd.conf && \
