@@ -17,6 +17,9 @@ RUN apt-get update && \
     mysql-server \
     dovecot-common \
     dovecot-imapd \
+    dovecot-sieve \
+    dovecot-managesieved \
+    dovecot-mysql \
     libsasl2-2 \
     libsasl2-modules \
     libsasl2-modules-sql \
