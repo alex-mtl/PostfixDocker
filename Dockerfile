@@ -108,7 +108,7 @@ RUN sed -i 's/#mail_plugins = \$mail_plugins/log_path = \/home\/vmail\/dovecot-d
      auth_socket_path = \/var\/run\/dovecot\/auth-master\n\
      postmaster_address = postmaster@example.com\n\
      mail_plugins = sieve\n\
-     global_script_path = \/home\/vmail\/globalsieverc\n/' /etc/dovecot/conf.d/15-lda.conf
+     sieve_global_path = \/home\/vmail\/globalsieverc\n/' /etc/dovecot/conf.d/15-lda.conf
 
 RUN sed -i 's/#driver =/driver = mysql/' /etc/dovecot/dovecot-sql.conf.ext
 RUN sed -i 's/#connect =/connect = host=127.0.0.1 dbname='$MYSQL_DBNAME' user='$MYSQL_USERNAME' password='$MYSQL_PASSWORD'/' /etc/dovecot/dovecot-sql.conf.ext
