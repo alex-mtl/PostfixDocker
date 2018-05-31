@@ -53,8 +53,8 @@ RUN chmod o= /etc/postfix/mysql-virtual_*.cf && \
   groupadd -g 5000 vmail && \
   useradd -g vmail -u 5000 vmail -d /home/vmail -m
 
-RUN postconf -e 'myhostname = server.example.com' && \
-  postconf -e 'mydestination = server.example.com, localhost, localhost.localdomain' && \
+RUN postconf -e 'myhostname = mail.bazar.md' && \
+  postconf -e 'mydestination = bazar.md, mail.bazar.md, localhost, localhost.localdomain' && \
   postconf -e 'mynetworks = 127.0.0.0/8' && \
   postconf -e 'message_size_limit = 30720000' && \
   postconf -e 'virtual_alias_domains =' && \
