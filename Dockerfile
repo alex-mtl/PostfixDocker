@@ -44,9 +44,28 @@ RUN service mysql start && \
   mysql -u root -e "$Q1"
 
 COPY cfg/mysql-virtual_domains.cf /etc/postfix/
+
+RUN sed -i 's/user = mail_admin/user = $MYSQL_USERNAME/' /etc/postfix/mysql-virtual_domains.cf
+RUN sed -i 's/password = mail_admin_password/password = $MYSQL_PASSWORD/' /etc/postfix/mysql-virtual_domains.cf
+RUN sed -i 's/dbname = mail/dbname = $MYSQL_DBNAME/' /etc/postfix/mysql-virtual_domains.cf
+
 COPY cfg/mysql-virtual_forwardings.cf /etc/postfix/
+
+RUN sed -i 's/user = mail_admin/user = $MYSQL_USERNAME/' /etc/postfix/mysql-virtual_forwardings.cf
+RUN sed -i 's/password = mail_admin_password/password = $MYSQL_PASSWORD/' /etc/postfix/mysql-virtual_forwardings.cf
+RUN sed -i 's/dbname = mail/dbname = $MYSQL_DBNAME/' /etc/postfix/mysql-virtual_forwardings.cf
+
 COPY cfg/mysql-virtual_mailboxes.cf /etc/postfix/
+
+RUN sed -i 's/user = mail_admin/user = $MYSQL_USERNAME/' /etc/postfix/mysql-virtual_mailboxes.cf
+RUN sed -i 's/password = mail_admin_password/password = $MYSQL_PASSWORD/' /etc/postfix/mysql-virtual_mailboxes.cf
+RUN sed -i 's/dbname = mail/dbname = $MYSQL_DBNAME/' /etc/postfix/mysql-virtual_mailboxes.cf
+
 COPY cfg/mysql-virtual_email2email.cf /etc/postfix/
+
+RUN sed -i 's/user = mail_admin/user = $MYSQL_USERNAME/' /etc/postfix/mysql-virtual_email2email.cf
+RUN sed -i 's/password = mail_admin_password/password = $MYSQL_PASSWORD/' /etc/postfix/mysql-virtual_email2email.cf
+RUN sed -i 's/dbname = mail/dbname = $MYSQL_DBNAME/' /etc/postfix/mysql-virtual_email2email.cf
 
 RUN chmod o= /etc/postfix/mysql-virtual_*.cf && \
   chgrp postfix /etc/postfix/mysql-virtual_*.cf && \
@@ -91,6 +110,10 @@ RUN sed -i 's#OPTIONS=".*"#OPTIONS="-c -m /var/spool/postfix/var/run/saslauthd -
 
 COPY cfg/smtp /etc/pam.d/
 COPY cfg/smtpd.conf /etc/postfix/sasl/
+
+RUN sed -i 's/sql_user: mail_admin/sql_user: $MYSQL_USERNAME/' /etc/postfix/sasl/smtpd.conf
+RUN sed -i 's/sql_passwd: mail_admin_password/sql_passwd: $MYSQL_PASSWORD/' /etc/postfix/sasl/smtpd.conf
+RUN sed -i 's/sql_database: mail/sql_passwd: $MYSQL_DBNAME/' /etc/postfix/sasl/smtpd.conf
 
 RUN chmod o= /etc/pam.d/smtp && \
   chmod o= /etc/postfix/sasl/smtpd.conf && \
