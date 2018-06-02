@@ -93,8 +93,8 @@ RUN postconf -e 'myhostname = mail.bazar.md' && \
   postconf -e 'virtual_create_maildirsize = yes' && \
   postconf -e 'virtual_maildir_extended = yes' && \
   postconf -e 'proxy_read_maps = $local_recipient_maps $mydestination $virtual_alias_maps $virtual_alias_domains $virtual_mailbox_maps $virtual_mailbox_domains $relay_recipient_maps $relay_domains $canonical_maps $sender_canonical_maps $recipient_canonical_maps $relocated_maps $transport_maps $mynetworks $virtual_mailbox_limit_maps' && \
-  postconf -e virtual_transport=dovecot && \
-  postconf -e dovecot_destination_recipient_limit=1
+  postconf -e 'virtual_transport=dovecot' && \
+  postconf -e 'dovecot_destination_recipient_limit=1'
 
 WORKDIR /etc/postfix
 RUN openssl req -new -outform PEM -out smtpd.cert -newkey rsa:2048 -nodes \
