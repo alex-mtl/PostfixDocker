@@ -5,7 +5,7 @@ ENV MYSQL_USERNAME mail_admin
 ENV MYSQL_PASSWORD "p0stf1x!"
 ENV MYSQL_DBNAME   mail
 
-#ARG DEBIAN_FRONTEND=noninteractive
+ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update
 
 RUN apt-get update && \
