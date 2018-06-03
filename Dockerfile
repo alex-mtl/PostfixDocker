@@ -143,8 +143,7 @@ RUN sed -i 's/#password_query = \\/password_query = SELECT email as user, passwo
 RUN service mysql start && \
   mysql -u root -e "USE mail; \
     INSERT INTO domains (domain) VALUES ('example.com'), ('bazar.md'); \
-    INSERT INTO users (email, password) VALUES ('mynewmail@example.com', ENCRYPT('password')), ('admin@bazar.md', ENCRYPT('adminbazar
-    '));"
+    INSERT INTO users (email, password) VALUES ('mynewmail@example.com', ENCRYPT('password')), ('admin@bazar.md', ENCRYPT('adminbazar'));"
 
 EXPOSE 25
 EXPOSE 143
