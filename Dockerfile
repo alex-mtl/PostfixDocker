@@ -5,7 +5,7 @@ ENV MYSQL_USERNAME mail_admin
 ENV MYSQL_PASSWORD "p0stf1x!"
 ENV MYSQL_DBNAME   mail
 
-ARG DEBIAN_FRONTEND=noninteractive
+#ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update
 
 RUN apt-get update && \
@@ -93,7 +93,7 @@ RUN postconf -e 'myhostname = mail.bazar.md' && \
   postconf -e 'virtual_create_maildirsize = yes' && \
   postconf -e 'virtual_maildir_extended = yes' && \
   postconf -e 'proxy_read_maps = $local_recipient_maps $mydestination $virtual_alias_maps $virtual_alias_domains $virtual_mailbox_maps $virtual_mailbox_domains $relay_recipient_maps $relay_domains $canonical_maps $sender_canonical_maps $recipient_canonical_maps $relocated_maps $transport_maps $mynetworks $virtual_mailbox_limit_maps' && \
-  postconf -e 'virtual_transport=dovecot' && \
+  postconf -e 'virtual_transport = dovecot' && \
   postconf -e 'dovecot_destination_recipient_limit=1'
 
 WORKDIR /etc/postfix
@@ -143,7 +143,8 @@ RUN sed -i 's/#password_query = \\/password_query = SELECT email as user, passwo
 RUN service mysql start && \
   mysql -u root -e "USE mail; \
     INSERT INTO domains (domain) VALUES ('example.com'), ('bazar.md'); \
-    INSERT INTO users (email, password) VALUES ('mynewmail@example.com', ENCRYPT('password')), ('admin@bazar.md', ENCRYPT('adminbazar'));"
+    INSERT INTO users (email, password) VALUES ('mynewmail@example.com', ENCRYPT('password')), ('admin@bazar.md', ENCRYPT('adminbazar
+    '));"
 
 EXPOSE 25
 EXPOSE 143
